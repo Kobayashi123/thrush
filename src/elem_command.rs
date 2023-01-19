@@ -1,5 +1,7 @@
 use crate::{Feeder, ShellCore};
-use nix::unistd::execvp;
+use nix::sys::wait;
+use nix::unistd;
+use nix::unistd::ForkResult;
 use std::ffi::CString;
 use std::process;
 
@@ -11,12 +13,21 @@ pub struct Command {
 
 impl Command {
     pub fn exec(&mut self, _core: &mut ShellCore) {
-        //引数_coreはまだ使いません
         if self.text == "exit\n" {
             process::exit(0);
         }
 
-        println!("{:?}", execvp(&self.cargs[0], &self.cargs));
+        match unsafe { unistd::fork() } {
+            Ok(ForkResult::Child) => {
+                let err = unistd::execvp(&self.cargs[0], &self.cargs);
+                println!("Failed to execute. {:?}", err);
+                process::exit(127);
+            }
+            Ok(ForkResult::Parent { child }) => {
+                let _ = wait::waitpid(child, None);
+            }
+            Err(err) => panic!("Failed to fork. {}", err),
+        }
     }
 
     pub fn parse(feeder: &mut Feeder, _core: &mut ShellCore) -> Option<Command> {
