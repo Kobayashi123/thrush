@@ -2,7 +2,9 @@ use crate::{Feeder, ShellCore};
 use nix::sys::wait;
 use nix::unistd;
 use nix::unistd::ForkResult;
+use std::env;
 use std::ffi::CString;
+use std::path::Path;
 use std::process;
 
 pub struct Command {
@@ -15,6 +17,13 @@ impl Command {
     pub fn exec(&mut self, _core: &mut ShellCore) {
         if self.text == "exit\n" {
             process::exit(0);
+        }
+        if self.args[0] == "cd" && self.args.len() > 1 {
+            let path = Path::new(&self.args[1]);
+            if env::set_current_dir(&path).is_err() {
+                eprintln!("Cannot change directory");
+            }
+            return;
         }
 
         match unsafe { unistd::fork() } {
