@@ -8,21 +8,37 @@ use std::path::Path;
 use std::process;
 
 pub struct Command {
-    text: String,
+    _text: String,
     args: Vec<String>,
     cargs: Vec<CString>,
 }
 
 impl Command {
     pub fn exec(&mut self, core: &mut ShellCore) {
-        if self.text == "exit\n" {
-            process::exit(0);
+        if self.args[0] == "exit" {
+            eprintln!("exit");
+            if self.args.len() > 1 {
+                core.vars.insert("?".to_string(), self.args[1].clone());
+            }
+            let exit_status = match core.vars["?"].parse::<i32>() {
+                Ok(n) => n % 256,
+                Err(_) => {
+                    eprintln!("barsh: exit: {}: numeric argument required", core.vars["?"]);
+                    2
+                }
+            };
+            process::exit(exit_status);
         }
         if self.args[0] == "cd" && self.args.len() > 1 {
             let path = Path::new(&self.args[1]);
-            if env::set_current_dir(&path).is_err() {
+            let exist_status = match env::set_current_dir(&path) {
+                Ok(_) => 0,
+                Err(_) => 1,
+            };
+            if exist_status != 0 {
                 eprintln!("Cannot change directory");
             }
+            core.vars.insert("?".to_string(), exist_status.to_string());
             return;
         }
 
@@ -38,7 +54,7 @@ impl Command {
                 }
                 Err(err) => {
                     println!("Failed to execute. {:?}", err);
-                    process::exit(127);
+                    process::exit(127)
                 }
                 _ => (),
             },
@@ -60,7 +76,7 @@ impl Command {
 
         if args.len() > 0 {
             Some(Command {
-                text: line,
+                _text: line,
                 args: args,
                 cargs: cargs,
             })

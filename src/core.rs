@@ -1,17 +1,21 @@
 use nix::sys::wait;
 use nix::sys::wait::WaitStatus;
 use nix::unistd::Pid;
+use std::collections::HashMap;
 
 pub struct ShellCore {
     pub history: Vec<String>,
+    pub vars: HashMap<String, String>,
 }
 
 impl ShellCore {
     pub fn new() -> ShellCore {
-        let core = ShellCore {
+        let mut core = ShellCore {
             history: Vec::new(),
+            vars: HashMap::new(),
         };
 
+        core.vars.insert("?".to_string(), "0".to_string());
         core
     }
 
@@ -31,6 +35,6 @@ impl ShellCore {
             }
         };
 
-        eprintln!("終了ステータス: {}", exit_status);
+        self.vars.insert("?".to_string(), exit_status.to_string());
     }
 }
