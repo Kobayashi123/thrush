@@ -1,5 +1,4 @@
 use crate::{Feeder, ShellCore};
-use nix::sys::wait;
 use nix::unistd;
 use nix::unistd::ForkResult;
 use std::env;
@@ -14,7 +13,7 @@ pub struct Command {
 }
 
 impl Command {
-    pub fn exec(&mut self, _core: &mut ShellCore) {
+    pub fn exec(&mut self, core: &mut ShellCore) {
         if self.text == "exit\n" {
             process::exit(0);
         }
@@ -33,7 +32,7 @@ impl Command {
                 process::exit(127);
             }
             Ok(ForkResult::Parent { child }) => {
-                let _ = wait::waitpid(child, None);
+                core.wait_process(child);
             }
             Err(err) => panic!("Failed to fork. {}", err),
         }
