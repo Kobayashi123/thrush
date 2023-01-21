@@ -1,4 +1,5 @@
 use crate::{Feeder, ShellCore};
+use nix::errno::Errno;
 use nix::unistd;
 use nix::unistd::ForkResult;
 use std::env;
@@ -26,11 +27,21 @@ impl Command {
         }
 
         match unsafe { unistd::fork() } {
-            Ok(ForkResult::Child) => {
-                let err = unistd::execvp(&self.cargs[0], &self.cargs);
-                println!("Failed to execute. {:?}", err);
-                process::exit(127);
-            }
+            Ok(ForkResult::Child) => match unistd::execvp(&self.cargs[0], &self.cargs) {
+                Err(Errno::EACCES) => {
+                    println!("barsh: {}: Permission denied", &self.args[0]);
+                    process::exit(126)
+                }
+                Err(Errno::ENOENT) => {
+                    println!("{}: command not found", &self.args[0]);
+                    process::exit(127)
+                }
+                Err(err) => {
+                    println!("Failed to execute. {:?}", err);
+                    process::exit(127);
+                }
+                _ => (),
+            },
             Ok(ForkResult::Parent { child }) => {
                 core.wait_process(child);
             }
