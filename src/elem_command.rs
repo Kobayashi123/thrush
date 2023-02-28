@@ -6,7 +6,7 @@ use std::ffi::CString;
 use std::process;
 
 pub struct Command {
-    _text: String,
+    pub text: String,
     args: Vec<String>,
     cargs: Vec<CString>,
 }
@@ -51,7 +51,7 @@ impl Command {
 
         if args.len() > 0 {
             Some(Command {
-                _text: line,
+                text: line,
                 args: args,
                 cargs: cargs,
             })
