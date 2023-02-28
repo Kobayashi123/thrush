@@ -15,7 +15,7 @@ fn show_version() {
     eprintln!("© 2023 Shun Kobayashi");
     eprintln!("License: BSD 3-Clause\n");
 
-    eprintln!("This is open source software. You can redistirbute and use in source\nand binary forms with or without modification under the license.");
+    eprintln!("This is open source software. You can redistribute and use in source\nand binary forms with or without modification under the license.");
     eprintln!("There is no warranty, to the extent permitted by law.");
     process::exit(0);
 }
