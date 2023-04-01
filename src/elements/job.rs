@@ -7,14 +7,14 @@ pub struct Job {
 }
 
 impl Job {
-    // pub fn exec(&mut self, core: &mut ShellCore) {
-    //     for pipeline in self.pipelines.iter_mut() {
-    //         pipeline.exec(core);
-    //     }
-    // }
+    pub fn exec(&mut self, core: &mut ShellCore) {
+        for pipeline in self.pipelines.iter_mut() {
+            pipeline.exec(core);
+        }
+    }
 
-    pub fn parse(text: &mut Feeder, core: &mut ShellCore) -> Option<Job> {
-        if let Some(pipeline) = Pipeline::parse(text, core) {
+    pub fn parse(feeder: &mut Feeder, core: &mut ShellCore) -> Option<Job> {
+        if let Some(pipeline) = Pipeline::parse(feeder, core) {
             return Some(Job {
                 text: pipeline.text.clone(),
                 pipelines: vec![pipeline],

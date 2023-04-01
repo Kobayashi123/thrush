@@ -1,5 +1,4 @@
 mod core;
-mod elem_command;
 mod elements;
 mod feeder;
 mod term;
@@ -27,7 +26,7 @@ fn main() {
         show_version();
     }
 
-    /* Ignore Ctrl+C (Childlen will receive instead.) */
+    /* Ignore Ctrl+C (Children will receive instead.) */
     ctrlc::set_handler(move || {}).expect("Unable to set the Ctrl+C handler.");
 
     let mut core = ShellCore::new();
@@ -39,7 +38,7 @@ fn main_loop(core: &mut ShellCore) {
     loop {
         if feeder.feed_line(core) {
             match Script::parse(&mut feeder, core) {
-                Some(mut s) => s.jobs[0].pipelines[0].commands[0].exec(core),
+                Some(mut s) => s.exec(core),
                 None => process::exit(1),
             }
         }
