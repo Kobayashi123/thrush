@@ -1,6 +1,7 @@
 use super::pipeline::Pipeline;
 use crate::{Feeder, ShellCore};
 
+#[derive(Debug)]
 pub struct Job {
     pub pipelines: Vec<Pipeline>,
     pub text: String,

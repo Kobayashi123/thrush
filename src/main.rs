@@ -1,8 +1,6 @@
 mod core;
 mod elements;
 mod feeder;
-mod term;
-mod utils;
 
 use std::{env, process};
 

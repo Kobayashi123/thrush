@@ -1,5 +1,7 @@
-use crate::term;
 use crate::ShellCore;
+
+mod scanner;
+mod term;
 
 #[derive(Clone)]
 pub struct Feeder {
@@ -18,6 +20,10 @@ impl Feeder {
         self.remaining = self.remaining[cutpos..].to_string();
 
         cut
+    }
+
+    pub fn rewind(&mut self, backup: Feeder) {
+        self.remaining = backup.remaining;
     }
 
     pub fn feed_line(&mut self, core: &mut ShellCore) -> bool {

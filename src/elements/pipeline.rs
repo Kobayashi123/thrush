@@ -1,6 +1,7 @@
 use super::simple_command::SimpleCommand;
 use crate::{Feeder, ShellCore};
 
+#[derive(Debug)]
 pub struct Pipeline {
     pub commands: Vec<SimpleCommand>,
     pub text: String,
