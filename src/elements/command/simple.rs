@@ -1,4 +1,5 @@
 use crate::{Feeder, ShellCore};
+use super::Command;
 use nix::errno::Errno;
 use nix::unistd;
 use nix::unistd::ForkResult;
@@ -12,8 +13,8 @@ pub struct SimpleCommand {
     cargs: Vec<CString>,
 }
 
-impl SimpleCommand {
-    pub fn exec(&mut self, core: &mut ShellCore) {
+impl Command for SimpleCommand {
+    fn exec(&mut self, core: &mut ShellCore) {
         if core.run_builtin(&mut self.args) {
             return;
         }
@@ -42,6 +43,10 @@ impl SimpleCommand {
         }
     }
 
+    fn get_text(&self) -> String { self.text.clone() }
+}
+
+impl SimpleCommand {
     fn set_cargs(&mut self) {
         self.cargs = self
             .args
@@ -85,7 +90,7 @@ impl SimpleCommand {
         Self::eat_blank(feeder, &mut ans);
         while Self::eat_word(feeder, &mut ans) && Self::eat_blank(feeder, &mut ans) {}
 
-        eprintln!("{:?}", ans);
+        // eprintln!("{:?}", ans);
 
         if ans.args.len() > 0 {
             Some(ans)

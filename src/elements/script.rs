@@ -50,10 +50,10 @@ impl Script {
         }
 
         if feeder.remaining.len() == 0 {
-            eprintln!("{:?}", &ans);
+            // eprintln!("{:?}", &ans);
             Some(ans)
         } else {
-            eprintln!("ERROR");
+            // eprintln!("ERROR");
             None
         }
     }

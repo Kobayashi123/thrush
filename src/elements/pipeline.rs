@@ -1,9 +1,10 @@
-use super::simple_command::SimpleCommand;
+use super::command;
 use crate::{Feeder, ShellCore};
+use crate::elements::command::Command;
 
 #[derive(Debug)]
 pub struct Pipeline {
-    pub commands: Vec<SimpleCommand>,
+    pub commands: Vec<Box<dyn Command>>,
     pub text: String,
 }
 
@@ -15,10 +16,10 @@ impl Pipeline {
     }
 
     pub fn parse(feeder: &mut Feeder, core: &mut ShellCore) -> Option<Pipeline> {
-        if let Some(command) = SimpleCommand::parse(feeder, core) {
+        if let Some(command) = command::parse(feeder, core) {
             return Some(Pipeline {
-                text: command.text.clone(),
-                commands: vec![command],
+                text: command.get_text(),
+                commands: vec!(command),
             });
         }
         None
